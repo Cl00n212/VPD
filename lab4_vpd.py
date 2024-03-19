@@ -11,8 +11,8 @@ mass_cord = [0.0, 0.0, alph]
 def new_proiz(mass_wlr, mass_proizv_cord, mass_cord):
     w = (mass_wlr[1] - mass_wlr[0]) * r_kol/ B_rol
     v = (mass_wlr[1] - mass_wlr[0]) * r_kol / 2
-    x_pi = v * math.cos(mass_cord[-1][2])
-    y_pi = v * math.sin(mass_cord[-1][2])
+    x_pi = v * math.cos(mass_cord[2])
+    y_pi = v * math.sin(mass_cord[2])
     th_pi = w
     mass_proizv_cord.append([x_pi, y_pi, th_pi])
 
