@@ -3,13 +3,16 @@ import math
 r_kol = 1 # радиус колёс
 B_rol = 5 # растояние между центрами двух колёс
 
-a = 0
-def new_proiz():
-    a += 1
+mass_proizv_cord = [[0, 0, 0]] # x_p, y_p, th_p
+mass_cord = [[0, 0, alph]] # x, y, th
 
-for i in range(5):
-    new_proiz()
-    print(a)
+def new_proiz(mass_wlr, mass_proizv_cord, mass_cord):
+    w = (mass_wlr[1] - mass_wlr[0]) * r_kol/ B_rol
+    v = (mass_wlr[1] - mass_wlr[0]) * r_kol / 2
+    x_pi = v * math.cos(mass_cord[-1][2])
+    y_pi = v * math.sin(mass_cord[-1][2])
+    th_pi = w
+    mass_proizv_cord.append([x_pi, y_pi, th_pi])
 
 
 
