@@ -2,9 +2,11 @@ import math
 
 r_kol = 1 # радиус колёс
 B_rol = 5 # растояние между центрами двух колёс
+alph = 0.0 # изначальный угол относительно Ox
 
-mass_proizv_cord = [[0, 0, 0]] # x_p, y_p, th_p
-mass_cord = [[0, 0, alph]] # x, y, th
+mass_proizv_cord = [0.0, 0.0, 0.0]
+mass_proizv_cord_prev = [0.0, 0.0, 0.0]
+mass_cord = [0.0, 0.0, alph]
 
 def new_proiz(mass_wlr, mass_proizv_cord, mass_cord):
     w = (mass_wlr[1] - mass_wlr[0]) * r_kol/ B_rol
