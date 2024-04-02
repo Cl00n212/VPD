@@ -101,8 +101,8 @@ def integrate(mass_cord, mass_proizv, h): #2
     return 
 
 
-
-
+def save_cord(file_name, mass_cord): #сохраняет кординаты в формате "x1 y1 theta"
+    file.write(mass_cord[0] + " " + mass_cord[1] + " " + mass_cord[2]+ "\n") 
 
 def check_error_cord(mass_cord_1, mass_cord_2): # проверяет отличается ли значение кодинат на error
     if (abs(mass_cord_1[0] - mass_cord_2[1]) < error):
@@ -111,7 +111,7 @@ def check_error_cord(mass_cord_1, mass_cord_2): # проверяет отлич�
         return False
 
 
-def F_U(mass_gelaem, mass_cord, mass_proizv): #3
+def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
 
     motors = get_motors()
 
@@ -120,6 +120,8 @@ def F_U(mass_gelaem, mass_cord, mass_proizv): #3
     pos_start = [motors[0].position, motors[1].position]
     
     while True:
+        save_cord(file_name, mass_cord)
+
         if (check_error_cord(mass_cord, mass_gelaem)):
             break
         mass_wlr = [motors[0].speed, motors[1].speed]
@@ -145,11 +147,16 @@ def F_U(mass_gelaem, mass_cord, mass_proizv): #3
 
 n = 4
 for i in range(n):
+    file_name = "data_" + str(i + 1)
+    file = open(file_name, "w")
+
     x0, y0 = map(int, input().split())
 
     mass_cord = mass_start_cord
     mass_proizv = mass_start_proizv
     
-    F_U([x0, y0], mass_cord, mass_proizv)
+    F_U([x0, y0], mass_cord, mass_proizv, file_name)
+
+    file.close()
 
 print("Программа закончила работу")
