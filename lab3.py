@@ -15,7 +15,8 @@ def Pid_Reg(k_p, k_i, k_d, file_name):
     pos_start = motor_a.position
     motor_pose = pos_start
     file = open(file_name, "w")
-
+    inregralf = 0
+    
     while True:
         last_time = timeReal
         timeReal = time.time() - time_start
@@ -27,9 +28,7 @@ def Pid_Reg(k_p, k_i, k_d, file_name):
         else:
             min_t = 1
         df = ((omega_star - motor_pose) - (omega_star - last_pose)) / (timeReal - last_time)
-        inregralf = ((omega_star - motor_pose) + (omega_star - last_pose)) / 2 * (timeReal - last_time) 
-        if omega_star - motor_pose > 0 and inregralf < 0 or omega_star - motor_pose < 0 and inregralf > 0:
-            inregralf = -1 * inregralf
+        inregralf += ((omega_star - motor_pose) + (omega_star - last_pose)) / 2 * (timeReal - last_time) 
         
 
         file.write(str(timeReal) + " " + str(motor_pose) + "\n")
