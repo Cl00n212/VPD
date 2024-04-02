@@ -27,7 +27,7 @@ def Pid_Reg(k_p, k_i, k_d, file_name):
         else:
             min_t = 1
         df = ((omega_star - motor_pose) - (omega_star - last_pose)) / (timeReal - last_time)
-        inregralf = (omega_star - motor_pose) * (omega_star - last_pose) * (timeReal - last_time) / 2
+        inregralf = ((omega_star - motor_pose) + (omega_star - last_pose)) / 2 * (timeReal - last_time) 
         if omega_star - motor_pose > 0 and inregralf < 0 or omega_star - motor_pose < 0 and inregralf > 0:
             inregralf = -1 * inregralf
         
