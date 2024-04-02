@@ -8,6 +8,7 @@ theta = 0.0 # изначальный угол относительно Ox
 error = 0.05 # константы ...
 Ks = 0.2 # константы для прямолинейного движения 
 Kr = 0.2 # константы для криволинейного движения
+delta_time = 0.01 # время между опирациями 
 mass_start_cord = [0.0, 0.0, theta]
 mass_start_proizv = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
 
@@ -22,14 +23,12 @@ def stop_motors(): # останавливает моторы
     motors = get_motors()
     motors[0].run_direct(duty_cycle_sp = 0)
     motors[1].run_direct(duty_cycle_sp = 0)
-    return
 
 
 def start_motors(Ul, Ur): # запускает моторы с наряжением Ul и Ur
     motors = get_motors()
     motors[0].run_direct(duty_cycle_sp = Ul)
     motors[1].run_direct(duty_cycle_sp = Ur)
-    return
 
 
 def get_U(mass_gelaem, mass_cord): # возвращает напряжение картежем (U_left, U_right)
@@ -62,12 +61,10 @@ def anpack_mass_proizv(mass_proizv): # возвращает mass произво�
 
 def update_mass_proizv(mass_proizv, new_mass_proizv): # обновляет значение первой переменной(mass_proizv) на занченние второй
     mass_proizv = new_mass_proizv
-    return
 
 
 def update_mass_cord(mass_cord, new_mass_cord): # обновляет значение первой переменной(mass_cord) на занченние второй
     mass_cord = new_mass_cord
-    return
 
 
 def new_proiz(mass_wlr, mass_proizv, mass_cord): #1
@@ -84,7 +81,6 @@ def new_proiz(mass_wlr, mass_proizv, mass_cord): #1
 
     update_mass_proizv(mass_proizv, new_mass_proizv)
 
-    return 
 
 
 def integrate(mass_cord, mass_proizv, h): #2
@@ -97,8 +93,6 @@ def integrate(mass_cord, mass_proizv, h): #2
     new_mass_cord[2] = mass_cord[2] + (mass_proizv_cord_prev[2] + mass_proizv_cord[2]) * h * 0.5
 
     update_mass_cord(mass_cord, new_mass_cord)
-
-    return 
 
 
 def save_cord(file_name, mass_cord): #сохраняет кординаты в формате "x1 y1 theta"
@@ -120,25 +114,30 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
     pos_start = [motors[0].position, motors[1].position]
     
     while True:
+        time_real = time.time()
+        h = time_real - time_last
+
         save_cord(file_name, mass_cord)
 
         if (check_error_cord(mass_cord, mass_gelaem)):
             break
         mass_wlr = [motors[0].speed, motors[1].speed]
 
+        time_error = time_real - time.time()
+
+        if time_error < delta_time: # выравнивает промежутки времении между операциями
+            time.sleep(delta_time - time_error)
+
         new_proiz(mass_wlr, mass_proizv, mass_cord)
 
-        time_real = time.time()
-        h = time_real - time_last
         integrate(mass_cord, mass_proizv, h)
-
+        
         start_motors(get_U(mass_gelaem, mass_cord))
         
         time_last = time_real
     
     stop_motors()
 
-    return
 
 
 
@@ -156,7 +155,8 @@ for i in range(n):
     mass_proizv = mass_start_proizv
     
     F_U([x0, y0], mass_cord, mass_proizv, file_name)
-
     file.close()
+
+    time.sleep(1)
 
 print("Программа закончила работу")
