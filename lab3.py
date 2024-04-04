@@ -98,7 +98,7 @@ for k_i in range(1,11,1):
 k_p = 3
 k_i = 5
 
-k_d = 0.051
+k_d = 0.05
 while k_d < 0.15:
     file_name = "data_PReg_big_" + str(k_p) + "_" + str(k_i) + "_" + str(k_d)[:5].replace(".","x")
     Pid_Reg(k_p, k_i, k_d, file_name)
