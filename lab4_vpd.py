@@ -146,7 +146,7 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
 
 n = 4
 for i in range(n):
-    file_name = "data_" + str(i + 1)
+    file_name = "data_" + str(i + 1) + ".txt"
     file = open(file_name, "w")
 
     x0, y0 = map(int, input().split())
