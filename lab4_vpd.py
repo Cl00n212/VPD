@@ -12,12 +12,16 @@ delta_time = 0.01 # время между опирациями
 mass_start_cord = [0.0, 0.0, theta]
 mass_start_proizv = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
 
+rad_v_gradus = 57.3
+
 def get_motors(): # возвращяет массив [левый_двигатель, правый_двигатель]
     motor_left = motor.LargeMotor(motor.OUTPUT_A)
     motor_right = motor.LargeMotor(motor.OUTPUT_B)
 
-    return [motor_left, motor_right]
+    return (motor_left, motor_right)
 
+def azimut(mass_gelaem, mass_cord):
+    return math.atan2(mass_gelaem[0] - mass_cord[0], mass_gelaem[1] - mass_cord[1]) * rad_v_gradus
 
 def stop_motors(): # останавливает моторы
     motors = get_motors()
@@ -33,7 +37,7 @@ def start_motors(Ul, Ur): # запускает моторы с наряжени�
 
 def get_U(mass_gelaem, mass_cord): # возвращает напряжение картежем (U_left, U_right)
     mod_p = ((mass_gelaem[0] - mass_cord[0]) ** 2 + (mass_gelaem[1] - mass_cord[1]) ** 2) ** (1 / 2)
-    alfa = mass_gelaem[2] - mass_cord[2]
+    alfa = azimut(mass_gelaem, mass_cord)
     Us = Ks * mod_p
     Ur = Kr * alfa
     U_left = Us + Ur
@@ -73,8 +77,8 @@ def new_proiz(mass_wlr, mass_proizv, mass_cord): #1
 
     w = (mass_wlr[1] - mass_wlr[0]) * r_kol/ B_rol
     v = (mass_wlr[1] - mass_wlr[0]) * r_kol / 2
-    x_pi = v * math.cos(mass_cord[-1][2])
-    y_pi = v * math.sin(mass_cord[-1][2])
+    x_pi = v * math.cos(mass_cord[2])
+    y_pi = v * math.sin(mass_cord[2])
     th_pi = w
 
     new_mass_proizv = [mass_proizv_cord, [x_pi, y_pi, th_pi]]
@@ -87,7 +91,7 @@ def integrate(mass_cord, mass_proizv, h): #2
 
     mass_proizv_cord_prev, mass_proizv_cord = anpack_mass_proizv(mass_proizv)
 
-    new_mass_cord = []
+    new_mass_cord = [0.0, 0.0, 0.0]
     new_mass_cord[0] = mass_cord[0] + (mass_proizv_cord_prev[0] + mass_proizv_cord[0]) * h * 0.5
     new_mass_cord[1] = mass_cord[1] + (mass_proizv_cord_prev[1] + mass_proizv_cord[1]) * h * 0.5
     new_mass_cord[2] = mass_cord[2] + (mass_proizv_cord_prev[2] + mass_proizv_cord[2]) * h * 0.5
@@ -96,10 +100,10 @@ def integrate(mass_cord, mass_proizv, h): #2
 
 
 def save_cord(file_name, mass_cord): #сохраняет кординаты в формате "x1 y1 theta"
-    file.write(mass_cord[0] + " " + mass_cord[1] + " " + mass_cord[2]+ "\n") 
+    file.write(str(mass_cord[0]) + " " + str(mass_cord[1]) + " " + str(mass_cord[2]) + "\n") 
 
 def check_error_cord(mass_cord_1, mass_cord_2): # проверяет отличается ли значение кодинат на error
-    if (abs(mass_cord_1[0] - mass_cord_2[1]) < error):
+    if (abs(mass_cord_1[0] - mass_cord_2[0]) < error and abs(mass_cord_1[1] - mass_cord_2[1]) < error):
         return True
     else:
         return False
@@ -117,7 +121,7 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
         time_real = time.time()
         h = time_real - time_last
 
-        save_cord(file_name, mass_cord)
+        #save_cord(file_name, mass_cord)
 
         if (check_error_cord(mass_cord, mass_gelaem)):
             break
@@ -131,8 +135,11 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
         new_proiz(mass_wlr, mass_proizv, mass_cord)
 
         integrate(mass_cord, mass_proizv, h)
+        Ul, Ur = get_U(mass_gelaem, mass_cord)
         
-        start_motors(get_U(mass_gelaem, mass_cord))
+        #save_cord(file_name, [Ul,Ur,0.0]) #дебаг
+        
+        start_motors(Ul, Ur)
         
         time_last = time_real
     
@@ -144,12 +151,16 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
 
 
 
+a = [[10,0],[0,10],[-10,0],[0,-10]]
+
 n = 4
 for i in range(n):
     file_name = "data_" + str(i + 1) + ".txt"
     file = open(file_name, "w")
 
-    x0, y0 = map(int, input().split())
+    #x0, y0 = map(int, input().split())
+    x0 = a[i][0]
+    y0 = a[i][1]
 
     mass_cord = mass_start_cord
     mass_proizv = mass_start_proizv
