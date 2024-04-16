@@ -2,13 +2,13 @@ import ev3dev2.motor as motor
 import time
 import math
 
-r_kol = 1 # радиус колёс
-B_rol = 5 # растояние между центрами двух колёс
+r_kol = 28 # радиус колёс
+B_rol = 16.5 # растояние между центрами двух колёс
 theta = 0.0 # изначальный угол относительно Ox
 error = 0.05 # константы ...
 Ks = 0.6 # константы для прямолинейного движения 
 Kr = 0.6 # константы для криволинейного движения
-delta_time = 0.01 # время между опирациями 
+delta_time = 0.05 # время между опирациями 
 mass_start_cord = [0.0, 0.0, theta]
 mass_start_proizv = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
 
@@ -119,19 +119,22 @@ def F_U(mass_gelaem, mass_cord, mass_proizv, file_name): #3
     
     while True:
         time_real = time.time()
-        h = time_real - time_last
 
         #save_cord(file_name, mass_cord)
 
         if (check_error_cord(mass_cord, mass_gelaem)):
             break
-        mass_wlr = [motors[0].speed, motors[1].speed]
 
         time_error = time_real - time.time()
 
         if time_error < delta_time: # выравнивает промежутки времении между операциями
             time.sleep(delta_time - time_error)
+            
+        time_real = time.time()
+        h = time_real - time_last
 
+        mass_wlr = [motors[0].speed, motors[1].speed]
+        
         new_proiz(mass_wlr, mass_proizv, mass_cord)
 
         integrate(mass_cord, mass_proizv, h)
