@@ -3,15 +3,15 @@ import ev3dev2.motor as motor
 import time
 import math
 
-r_kol = 0.021
-B_rol = 0.165 
-theta = 0.0 
-error = 0.05
-Ks = 200
-Kr = 350
-delta_time = 0.05  
-mass_start_cord = [0.0, 0.0, theta]
-mass_start_proizv = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+r_kol = 0.021 #metr
+B_rol = 0.165 #metr
+theta = 0.0  #start_theta
+error = 0.05 #error_for_point
+Ks = 200 #ks_for_move_vpered
+Kr = 350 #kr_for_move_vbok
+delta_time = 0.05 #time_for_operation
+mass_start_cord = [0.0, 0.0, theta] #start_cordinate
+mass_start_proizv = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]] #start_proizv_cordinate
 
 def get_motors(): 
     motor_left = motor.LargeMotor(motor.OUTPUT_A)
